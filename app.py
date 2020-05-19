@@ -23,18 +23,18 @@ session = Session(engine)
 # 2. Create an app, being sure to pass __name__
 app = Flask(__name__)
 
-latestDate = (session.query(Measurement.date)
+latest_date = (session.query(Measurement.date)
                 .order_by(Measurement.date.desc())
                 .first())
-latestDate = list(np.ravel(latestDate))[0]
+latest_date = list(np.ravel(latest_date))[0]
 
-latestDate = dt.datetime.strptime(latestDate, '%Y-%m-%d')
-latestYear = int(dt.datetime.strftime(latestDate, '%Y'))
-latestMonth = int(dt.datetime.strftime(latestDate, '%m'))
-latestDay = int(dt.datetime.strftime(latestDate, '%d'))
+latest_date = dt.datetime.strptime(latest_date, '%Y-%m-%d')
+latest_year = int(dt.datetime.strftime(latest_date, '%Y'))
+latest_month = int(dt.datetime.strftime(latest_date, '%m'))
+latest_day = int(dt.datetime.strftime(latest_date, '%d'))
 
-yearBefore = dt.date(latestYear, latestMonth, latestDay) - dt.timedelta(days=365)
-yearBefore = dt.datetime.strftime(yearBefore, '%Y-%m-%d')
+year_ago = dt.date(latest_year, latest_month, latest_day) - dt.timedelta(days=365)
+year_ago = dt.datetime.strftime(year_ago, '%Y-%m-%d')
 
 # 3. Define what to do when a user hits the index route
 @app.route("/")
@@ -59,14 +59,14 @@ def stations():
 def precipitation():
     
     results = (session.query(Measurement.date, Measurement.prcp, Measurement.station)
-                      .filter(Measurement.date > yearBefore)
+                      .filter(Measurement.date > year_ago)
                       .order_by(Measurement.date)
                       .all())
     
     precipData = []
     for result in results:
-        precipDict = {result.date: result.prcp, "Station": result.station}
-        precipData.append(precipDict)
+        precip_dict = {result.date: result.prcp, "Station": result.station}
+        precipData.append(precip_dict)
 
     return jsonify(precipData)
 
@@ -80,8 +80,8 @@ def temperature():
 
     tempData = []
     for result in results:
-        tempDict = {result.date: result.tobs, "Station": result.station}
-        tempData.append(tempDict)
+        temp_dict = {result.date: result.tobs, "Station": result.station}
+        tempData.append(temp_dict)
 
     return jsonify(tempData)
 
